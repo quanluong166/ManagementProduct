@@ -49,7 +49,6 @@ func StartDB() error {
 
 	migrations := []interface{}{
 		&models.Category{},
-		&models.Document{},
 		&models.ProductCategory{},
 		&models.Product{},
 		&models.Supplier{},

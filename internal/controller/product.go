@@ -43,12 +43,24 @@ func (c *productController) GetProductByFilter(ctx *gin.Context) {
 		ResponseWithErrorAndMessage(http.StatusBadRequest, errors.New("INVALID_STATUS"), ctx)
 	}
 
+	if _, ok := models.CategoryMapping[req.Category]; !ok {
+		ResponseWithErrorAndMessage(http.StatusBadRequest, errors.New("INVALID_CATEGORY"), ctx)
+	}
+
 	products, total, err := c.p.GetProductByFilter(ctx, req)
 	if err != nil {
 		ctx.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	ctx.JSON(200, gin.H{"products": products, "total": total})
+
+	var res []*api.ProductDTO
+
+	for _, product := range products {
+		dto := c.convertToDTO(product)
+		res = append(res, dto)
+	}
+
+	ctx.JSON(200, gin.H{"products": res, "total": total})
 }
 
 func (c *productController) ExportProduct(ctx *gin.Context) {
@@ -72,4 +84,20 @@ func (c *productController) ExportProduct(ctx *gin.Context) {
 
 	// Serve the PDF file
 	ctx.File(filePath)
+}
+
+func (c *productController) convertToDTO(product *models.Product) *api.ProductDTO {
+	dateFormat := utils.ConvertToDateOnly(product.AddedDate)
+	productDTO := &api.ProductDTO{
+		ID:        product.ID,
+		Reference: product.Reference,
+		Name:      product.Name,
+		Price:     product.Price,
+		Status:    product.Status,
+		StockCity: product.StockCity,
+		AddedDate: dateFormat,
+		Quantity:  product.Quantity,
+	}
+
+	return productDTO
 }

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"productManagement/internal/models"
+	"time"
 
 	"github.com/jung-kurt/gofpdf"
 )
@@ -45,4 +46,8 @@ func GenerateProductPDF(products []*models.Product) (string, error) {
 		return "", err
 	}
 	return filePath, nil
+}
+
+func ConvertToDateOnly(inputTime time.Time) string {
+	return inputTime.Format("2006-01-02")
 }

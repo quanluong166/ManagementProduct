@@ -23,7 +23,7 @@ func NewProductUseCase(repo repository.ProductRepository) ProductUseCase {
 }
 
 func (p *productUseCase) GetProductByFilter(ctx context.Context, req *api.GetProductsByFilterRequest) ([]*models.Product, int64, error) {
-	products, total, err := p.repo.GetProductByFilter(ctx, req.Status, req.Paging.Limit, req.Paging.Offset)
+	products, total, err := p.repo.GetProductByFilter(ctx, req.CitySort, req.PriceSort, req.Category, req.Status, req.Paging.Limit, req.Paging.Offset)
 	if err != nil {
 		return nil, 0, err
 	}
