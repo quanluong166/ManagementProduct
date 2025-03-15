@@ -21,15 +21,13 @@ func NewProductController(p usecase.ProductUseCase) api.ProductController {
 	}
 }
 
-// @Summary Get product by price and category filter
-// @Description Get list of products by filter price and category
+// @Summary Get product by filter
+// @Description Get list of products by filter
 // @Tags Products
 // @Accept json
-// @Param body body model.GetProductsByFilterRequest true "Get product by filter"
+// @Param product body api.GetProductsByFilterRequest true "Get product by filter"
 // @Produce json
 // @Success 200 {object} string "Get product successfully"
-// @Failure 400 {object} string "Bad request"
-// @Failure 404 {object} string "Product not found"
 // @Failure 500 {object} string "Internal server error"
 // @Router /products/filter [post]
 func (c *productController) GetProductByFilter(ctx *gin.Context) {
@@ -63,14 +61,22 @@ func (c *productController) GetProductByFilter(ctx *gin.Context) {
 	ctx.JSON(200, gin.H{"products": res, "total": total})
 }
 
+// @Summary Export list of products by filter to PDF
+// @Description Export list of products by filter to PDF
+// @Tags Products
+// @Accept json
+// @Param product body api.ExportProductRequest true "Export product"
+// @Produce json
+// @Failure 400 {object} string "export error"
+// @Router /products/export [get]
 func (c *productController) ExportProduct(ctx *gin.Context) {
-	var req *api.GetProductsByFilterRequest
+	var req *api.ExportProductRequest
 	if err := ctx.ShouldBindBodyWithJSON(&req); err != nil {
 		ResponseWithErrorAndMessage(http.StatusBadRequest, err, ctx)
 		return
 	}
 
-	products, _, err := c.p.GetProductByFilter(ctx, req)
+	products, err := c.p.ExportProduct(ctx, req)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

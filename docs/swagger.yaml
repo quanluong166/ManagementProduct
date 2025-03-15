@@ -1,0 +1,84 @@
+definitions:
+  api.ExportProductRequest:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
+  api.GetProductsByFilterRequest:
+    properties:
+      category:
+        type: string
+      city_sort:
+        description: ASC, DESC
+        type: string
+      paging:
+        $ref: '#/definitions/models.Paging'
+      price_sort:
+        description: ASC, DESC
+        type: string
+      status:
+        type: string
+    type: object
+  models.Paging:
+    properties:
+      limit:
+        type: integer
+      offset:
+        type: integer
+    type: object
+info:
+  title: Product Management API
+  version: 1.0.0
+  contact: {}
+paths:
+  /products/export:
+    get:
+      consumes:
+      - application/json
+      description: Export list of products by filter to PDF
+      parameters:
+      - description: Export product
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/api.ExportProductRequest'
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: export error
+          schema:
+            type: string
+      summary: Export list of products by filter to PDF
+      tags:
+      - Products
+  /products/filter:
+    post:
+      consumes:
+      - application/json
+      description: Get list of products by filter
+      parameters:
+      - description: Get product by filter
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/api.GetProductsByFilterRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Get product successfully
+          schema:
+            type: string
+        "500":
+          description: Internal server error
+          schema:
+            type: string
+      summary: Get product by filter
+      tags:
+      - Products
+swagger: "2.0"
